@@ -1,1 +1,1 @@
-"This is the command to know your current working directory."
+My first shell lesson.
