@@ -1,1 +1,0 @@
-This is the command to know your current working directory.
