@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Use the ip command to get information about network interfaces
+ip_output=$(ip -4 addr show)
+
+# Use grep with a regular expression to filter and display IPv4 addresses
+ipv4_addresses = $(ip -4 addr show | grep -oP '\d+\.\d+\.\d+\.\d+' | sort -u)
+
+# Check if there are any IPv4 addresses
+if [ -z "$ipv4_addresses" ]; then
+    echo "No active IPv4 addresses found."
+else
+    echo "$ipv4_addresses"
+fi
+
