@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Check if the script is run as root
+if [ "$EUID" -ne 0 ]; then
+    echo "Please run as root"
+    exit
+fi
+
+# Update /etc/hosts file
+echo "127.0.0.2 localhost" >> /etc/hosts
+echo "8.8.8.8 facebook.com" >> /etc/hosts
+
