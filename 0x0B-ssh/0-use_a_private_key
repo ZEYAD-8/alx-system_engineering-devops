@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
-# conecting to a remote server with user and private key
-# Server details
-server_address="3.90.70.235"
-user="ubuntu"
-private_key="~/.ssh/school"
+# conects to a remote server using the private key
 
-# SSH command with single-character flags
-ssh -i $private_key $user@$server_address
+ssh -i ~/.ssh/school ubuntu@3.236.115.124
