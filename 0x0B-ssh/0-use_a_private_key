@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+# conecting to a remote server with user and private key
 # Server details
 server_address="3.90.70.235"
 user="ubuntu"
