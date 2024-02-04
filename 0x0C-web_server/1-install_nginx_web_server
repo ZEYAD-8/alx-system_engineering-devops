@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# Update package list
+sudo apt-get update
+
+# Install Nginx
+sudo apt-get install -y nginx
+
+# Allow traffic on port 80
+sudo ufw allow 'Nginx HTTP'
+
+# Change ownership and permissions
+sudo chown -R "$USER":"$USER" /var/www/html
+sudo chmod -R 755 /var/www
+
+# Create index file with "Hello World!"
+echo -e "Hello World!" | sudo tee /var/www/html/index.nginx-debian.html > /dev/null
+
+# Restart Nginx
+sudo service nginx restart
