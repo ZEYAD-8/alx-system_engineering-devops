@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Configures a new Ubuntu machine by installing
+# Nginx where it would be listening on port 80
+# Serve a page that would return a Hello World string
+# Redirect you with a 301 status when the location is /redirect_me
+
+Update package list
+sudo apt-get update
+
+# Install Nginx
+sudo apt-get install -y nginx
+
+# Allow traffic on port 80
+sudo ufw allow 'Nginx HTTP'
+
+# Change ownership and permissions
+sudo chown -R "$USER":"$USER" /var/www/html
+sudo chmod -R 755 /var/www
+
+# Create index file with "Hello World!"
+echo -e "Hello World!" | sudo tee /var/www/html/index.nginx-debian.html > /dev/null
+
+# Create redirection configuration file
+echo -e "server {\n    listen 80;\n    server_name localhost;\n\n    location /redirect_me {\n        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4/;\n    }\n}" | sudo tee /etc/nginx/sites-available/3-redirection > /dev/null
+
+# Create symbolic link to enable the redirection configuration
+sudo ln -s /etc/nginx/sites-available/3-redirection /etc/nginx/sites-enabled/
+
+# Remove default configuration symlink
+sudo rm /etc/nginx/sites-enabled/default
+
+# Restart Nginx
+sudo service nginx restart
