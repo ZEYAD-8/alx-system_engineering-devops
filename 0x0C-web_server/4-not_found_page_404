@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Configures a new Ubuntu machine by installing
+# Nginx where it would be listening on port 80
+# Serve a page that would return a Hello World string
+# Redirect you with a 301 status when the location is /redirect_me
+# Serves a custom error message when asked for a page that doesn't exist
+
+Update package list
+sudo apt-get update
+
+# Install Nginx
+sudo apt-get install -y nginx
+
+# Allow traffic on port 80
+sudo ufw allow 'Nginx HTTP'
+
+# Change ownership and permissions
+sudo chown -R "$USER":"$USER" /var/www/html
+sudo chmod -R 755 /var/www
+
+# Create index file with "Hello World!"
+echo -e "Hello World!" | sudo tee /var/www/html/index.html > /dev/null
+
+# Create error directory
+sudo mkdir -p /var/www/errors/
+
+# Create a custom error file with "Ceci n'est pas une page"
+echo -e "Ceci n'est pas une page" | sudo tee /var/www/errors/custom_error.html > /dev/null
+
+# Create the configuration file
+echo -e "server {
+    listen 80;
+    server_name localhost;
+
+    error_page 404 /custom_error.html;
+
+    location / {
+        root /var/www/html;
+        index index.html index.htm index.nginx-debian.html;
+
+    }
+
+    location /redirect_me {
+        return 301 https://github.com/ZEYAD-8/;
+    }
+
+    location = /custom_error.html {
+        root /var/www/errors;
+        internal;
+        return 200 \"Ceci n'est pas une page\";
+    }
+}" | sudo tee /etc/nginx/sites-available/4-not_found_page_404 > /dev/null
+
+# Create symbolic link to enable the configuration
+sudo ln -s /etc/nginx/sites-available/4-not_found_page_404 /etc/nginx/sites-enabled/
+
+# Remove default configuration symlink
+sudo rm /etc/nginx/sites-enabled/default
+
+# Restart Nginx
+sudo service nginx restart
