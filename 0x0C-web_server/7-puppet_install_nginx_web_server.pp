@@ -1,40 +1,40 @@
-# File: nginx_setup.pp
+# To install & configure nginx on a server using Puppet
 
-# Install Nginx package
-package { 'nginx':
-  ensure => installed,
+$config = "server {
+	listen 80 default_server;
+        listen [::]:80 default_server;
+
+        root /var/www/html;
+        index index.html;
+
+        location /redirect_me {
+                return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+        }
+}"
+
+package { 'nginx':  # Installs an Nginx server
+ensure	=> 'installed',
 }
 
-# Ensure Nginx service is running and enabled
-service { 'nginx':
-  ensure  => running,
-  enable  => true,
-  require => Package['nginx'],
+file { 'index.html':
+ensure	=> 'present',
+path	=> '/var/www/html/index.html',
+content	=> 'Hello World!',
+mode	=> '0644'
 }
 
-# Configure Nginx server
-file { '/etc/nginx/sites-available/default':
-  ensure  => file,
-  content => "
-server {
-    listen 80;
-
-    # Redirect /redirect_me to a new location with a 301 Moved Permanently
-    location /redirect_me {
-        return 301 http://\$host/;
-    }
-
-    # Return 'Hello World!' for the root path
-    location / {
-        return 200 'Hello World!';
-    }
-}
-",
-  notify => Service['nginx'],
+file { 'server_config':
+ensure	=> 'present',
+path 	=> '/etc/nginx/sites-available/default',
+content => $config
 }
 
-# Remove default Nginx default site configuration
-file { '/etc/nginx/sites-enabled/default':
-  ensure => absent,
-  notify => Service['nginx'],
+exec { 'service nginx restart':
+path	=> ['/usr/sbin', '/usr/bin']
 }
+
+# OR
+# exec {'install':
+#   provider => shell,
+#   command  => 'sudo apt-get -y update ; sudo apt-get -y install nginx ; echo "Hello World!" | sudo tee /var/www/html/index.nginx-debian.html ; sudo sed -i "s/server_name _;/server_name _;\n\trewrite ^\/redirect_me https:\/\/github.com\/Dikachis permanent;/" /etc/nginx/sites-available/default ; sudo service nginx start',
+# }
