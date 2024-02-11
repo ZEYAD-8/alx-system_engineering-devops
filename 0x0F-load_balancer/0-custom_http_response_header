@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Configures a new Ubuntu machine by installing
+# Nginx where it would be listening on port 80
+# Adds a custom header "X-Served-By" in the response indicating the hostname 
+# Serve a page that would return a Hello World string
+# Redirect you with a 301 status when the location is /redirect_me
+# Serves a custom error message when asked for a page that doesn't exist
+
+Update package list
+sudo apt-get update
+
+# Install Nginx
+sudo apt-get install -y nginx
+
+# Allow traffic on port 80
+sudo ufw allow 'Nginx HTTP'
+
+# Change ownership and permissions
+sudo chown -R "$USER":"$USER" /var/www/html
+sudo chmod -R 755 /var/www
+
+# Create index file with "Hello World!"
+echo -e "Hello World!" | sudo tee /var/www/html/index.html > /dev/null
+
+# Create the configuration file
+echo -e "server {
+    listen 80;
+    server_name localhost;
+
+    error_page 404 /custom_error.html;
+
+    add_header X-Served-By \$hostname;
+    location / {
+        root /var/www/html;
+        index index.html index.htm index.nginx-debian.html;
+    }
+
+    location /redirect_me {
+        return 301 https://github.com/ZEYAD-8/;
+    }
+
+    location = /custom_error.html {
+        internal;
+        return 200 \"Ceci n'est pas une page\";
+    }
+}" | sudo tee /etc/nginx/sites-available/my_custom_configuration > /dev/null
+
+# Create symbolic link to enable the configuration
+sudo ln -s /etc/nginx/sites-available/my_custom_configuration /etc/nginx/sites-enabled/
+
+# Remove default configuration symlink
+sudo rm /etc/nginx/sites-enabled/default
+
+# Restart Nginx
+sudo service nginx restart
