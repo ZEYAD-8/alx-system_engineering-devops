@@ -4,11 +4,16 @@
 # Distribute requests using a roundrobin algorithm
 # Make sure that HAProxy can be managed via an init script
 
+# Ensure the system is updated 
 sudo apt-get -y update
+sudo apt-get -y upgrade
+
+# Install HAProxy
 sudo apt-get install -y --no-install-recommends software-properties-common
 sudo add-apt-repository ppa:vbernat/haproxy-2.8
 apt-get install -y haproxy=2.8.\*
 
+# Add the required configuration
 echo "
 backend web-backend
         balance roundrobin
@@ -21,8 +26,5 @@ frontend proxynode
         default_backend web-backend
 " | sudo tee -a /etc/haproxy/haproxy.cfg
 
-# Enable and start HAProxy service
-sudo systemctl enable haproxy
-
 # Make sure the service starts
-sudo service haproxy start
+sudo service haproxy restart
