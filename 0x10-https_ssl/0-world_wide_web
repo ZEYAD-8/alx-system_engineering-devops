@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+# A Bash script that will display information about subdomains
 audit () {
     response=$(dig "$2.$1" | grep -A1 'ANSWER SECTION:' | grep "$2.$1")
     record_type=$(echo $response | awk {'print $4'})
