@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+audit () {
+    response=$(dig "$2.$1" | grep -A1 'ANSWER SECTION:' | grep "$2.$1")
+    record_type=$(echo $response | awk {'print $4'})
+    ip=$(echo $response | awk {'print $5'})
+    echo "The subdomain $2 is a $record_type record and points to $ip"
+}
+
+audit_all () {
+    audit $1 www
+    audit $1 lb-01
+    audit $1 web-01
+    audit $1 web-02
+}
+
+if [[ $# -lt 1 ]]; then
+    echo "There has to be a domain name"
+    exit 1
+fi
+
+domain="$1"
+
+if [[ $# -lt 2 ]]; then
+    subdomain=""
+else
+    subdomain="$2"
+fi
+
+if [[ -z $subdomain ]]; then
+    audit_all $domain
+else
+    audit $domain $subdomain
+fi
