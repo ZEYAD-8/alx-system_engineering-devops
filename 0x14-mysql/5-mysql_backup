@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Create a sql dump of all databases
+
+pass=$1
+if [[ -z pass ]]; then
+    echo "wrong password"
+    exit 0
+fi
+
+mysqldump -u root -p$pass --all-databases > backup.sql
+tar czf "$(date +'%Y-%m-%d')".tar.gz backup.sql
