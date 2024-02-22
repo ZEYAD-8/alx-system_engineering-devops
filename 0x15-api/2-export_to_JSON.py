@@ -7,28 +7,26 @@ export data in the JSON format.
 
 import json
 import requests
-from sys import argv
+import sys
 
 
-if __name__ == '__main__':
-    eid = argv[1]
-    userUrl = "https://jsonplaceholder.typicode.com/users"
-    url = userUrl + "/" + eid
+if __name__ == "__main__":
+    id = sys.argv[1]
+    url = 'https://jsonplaceholder.typicode.com'
+    response_todos = requests.get('{}/todos/?userId={}'.format(url, id))
+    response_employee = requests.get('{}/users/{}'.format(url, id))
 
-    response = requests.get(url)
-    uname = response.json().get('username')
+    todos = response_todos.json()
+    username = response_employee.json().get("username")
 
-    todoUrl = url + "/todos"
-    response = requests.get(todoUrl)
-    tasks = response.json()
+    formatted_tasks = []
+    for todo in todos:
+        formatted_tasks.append({'task': todo.get("title"),
+                                'completed': todo.get("completed"),
+                                'username': username})
 
-    dic = {eid: []}
-    for task in tasks:
-        dic[eid].append({
-            "task": task.get('title'),
-            "completed": task.get('completed'),
-            "username": uname
-        })
+    json_list = {id: formatted_tasks}
 
-    with open('{}.json'.format(eid), 'w') as f:
-        json.dump(dic, f)
+    filename = "{}.json".format(id)
+    with open(filename, "w") as file:
+        json.dump(json_list, file)
