@@ -18,14 +18,11 @@ if __name__ == "__main__":
 
     username = response_employee.get('username')
 
-    lis_tasks = []
-    for todo in response_todos:
-        lis_tasks.append([id,
-                          username,
-                          todo.get('completed'),
-                          todo.get('title')])
-
     filename = "{}.csv".format(id)
     with open(filename, "w") as file:
-        writer_object = csv.writer(file)
-        writer_object.writerows(lis_tasks)
+        for todo in response_todos:
+                file.write('"{}","{}","{}","{}"\n'
+                           .format(id,
+                                   username,
+                                   todo.get('completed'),
+                                   todo.get('title')))
