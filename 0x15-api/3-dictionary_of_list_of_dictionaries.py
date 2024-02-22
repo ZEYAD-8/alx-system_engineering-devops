@@ -7,32 +7,30 @@ and export data in the JSON format.
 
 import json
 import requests
+import sys
 
 
-if __name__ == '__main__':
-    url = "https://jsonplaceholder.typicode.com/users"
+if __name__ == "__main__":
+    url = 'https://jsonplaceholder.typicode.com'
+    response_todos = requests.get('{}/todos/'.format(url))
+    response_employees = requests.get('{}/users/'.format(url))
 
-    response = requests.get(url)
-    users = response.json()
+    todos = response_todos.json()
+    employees = response_employees.json()
 
-    dic = {}
-    for user in users:
-        userId = user.get('id')
-        uname = user.get('username')
+    json_list = {}
+    for employee in employees:
+        employee_tasks = []
+        id = employee.get("id")
+        username = employee.get("username")
+        for todo in todos:
+            if todo.get("userId") == id:
+                employee_tasks.append({'task': todo.get("title"),
+                                       'completed': todo.get("completed"),
+                                       'username': username})
 
-        url = 'https://jsonplaceholder.typicode.com/users/{}'.format(userId)
-        url = url + '/todos/'
+        json_list[id] = employee_tasks
 
-        response = requests.get(url)
-        tasks = response.json()
-        dic[userId] = []
-
-        for task in tasks:
-            dic[userId].append({
-                "task": task.get('title'),
-                "completed": task.get('completed'),
-                "username": uname
-            })
-
-    with open('todo_all_employees.json', 'w') as f:
-        json.dump(dic, f)
+    filename = "todo_all_employees.json"
+    with open(filename, "w") as file:
+        json.dump(json_list, file)
