@@ -5,24 +5,27 @@ returns information about his/her TODO list progress and
 export data in the CSV format.
 """
 
+import csv
 import requests
 from sys import argv
 
 
-if __name__ == '__main__':
-    eid = argv[1]
-    userUrl = "https://jsonplaceholder.typicode.com/users"
-    url = userUrl + "/" + eid
+if __name__ == "__main__":
+    id = argv[1]
+    url = 'https://jsonplaceholder.typicode.com'
+    response_todos = requests.get('{}/todos/?userId={}'.format(url, id)).json()
+    response_employee = requests.get('{}/users/{}'.format(url, id)).json()
 
-    response = requests.get(url)
-    uname = response.json().get('username')
+    username = response_employee.get('username')
 
-    todoUrl = url + "/todos"
-    response = requests.get(todoUrl)
-    tasks = response.json()
+    lis_tasks = []
+    for todo in response_todos:
+        lis_tasks.append([id,
+                          username,
+                          todo.get('completed'),
+                          todo.get('title')])
 
-    with open('{}.csv'.format(eid), 'w') as f:
-        for task in tasks:
-            f.write('"{}","{}","{}","{}"\n'
-                    .format(eid, uname, task.get('completed'),
-                            task.get('title')))
+    filename = "{}.csv".format(id)
+    with open(filename, "w") as file:
+        writer_object = csv.writer(file)
+        writer_object.writerows(lis_tasks)
