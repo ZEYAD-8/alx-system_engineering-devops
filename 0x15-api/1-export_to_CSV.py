@@ -21,8 +21,7 @@ if __name__ == "__main__":
     filename = "{}.csv".format(id)
     with open(filename, "w") as file:
         for todo in response_todos:
-                file.write('"{}","{}","{}","{}"\n'
-                           .format(id,
-                                   username,
-                                   todo.get('completed'),
-                                   todo.get('title')))
+            file.write('"{}","{}","{}","{}"\n'.format(id,
+                                                      username,
+                                                      todo.get('completed'),
+                                                      todo.get('title')))
