@@ -10,7 +10,7 @@ def top_ten(subreddit):
     """Returns the first 10 hot posts."""
     url = f"https://www.reddit.com/r/{subreddit}/hot.json"
     headers = {
-        'limit' : '10',
+        'limit': '10',
         'User-Agent': 'MyBot/0.1'
         }
     response = requests.get(url, headers=headers, allow_redirects=False)
